@@ -1,8 +1,12 @@
+import {postData} from '../services/requests.js';
+
 const forms = () => {
     const form = document.querySelectorAll('form'),
           input = document.querySelectorAll('input'),
           upload = document.querySelectorAll('[name="upload"]'),
-          textareas = document.querySelectorAll('textarea');
+          textareas = document.querySelectorAll('textarea'),
+          selects = document.querySelectorAll('select'),
+          finalPrice = document.querySelector('.calc-price');
 
     // checkNumInputs('input[name="user_phone"]');
 
@@ -19,15 +23,6 @@ const forms = () => {
         designer: 'assets/server.php',
         question: 'assets/question.php'
     }
-
-    const postData = async (url, data) => {
-        let res = await fetch(url, {
-            method: "POST",
-            body: data
-        });
-
-        return await res.text();
-    };
 
     const clearInputs = () => {
         input.forEach(item => {
@@ -75,6 +70,16 @@ const forms = () => {
             statusMessage.appendChild(textMessage);
 
             const formData = new FormData(item);
+            selects.forEach(item => {
+                if (item.value) {
+                    item.querySelectorAll('option').forEach(option => {
+                        if (option.value == item.value) {
+                            formData.append(item.getAttribute('id'), option.textContent);
+                        }
+                    })
+                }
+            });
+            formData.append('finalPrice', finalPrice.textContent);
             let api;
             item.closest('.popup-design') || item.classList.contains('calc_form') ? api = path.designer : api = path.question;
             console.log(api);
